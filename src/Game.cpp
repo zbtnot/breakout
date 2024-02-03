@@ -25,7 +25,7 @@ Game::Game(const char *title) {
     this->font = LoadFontEx("./assets/font.ttf", 96, 0, 0);
 
     // lambda for passing around the event emitter
-    auto eventHandler = [this](Event e) { this->handleEvents(e); };
+    auto eventHandler = [this](Event event, Entity *entity) { this->handleEvents(event, entity); };
 
     // load game objects
     auto paddlePositionX = this->SCREEN_WIDTH / 2 - this->paddleTexture.width / 2;
@@ -148,7 +148,7 @@ void Game::draw() {
     EndDrawing();
 }
 
-void Game::handleEvents(Event e) {
+void Game::handleEvents(Event e, Entity *entity) {
     switch (e) {
         case Event::BLOCK_HIT: {
             this->scoreBoard->setScore(this->scoreBoard->getScore() + 10);

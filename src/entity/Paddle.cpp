@@ -57,7 +57,7 @@ void Paddle::update() {
     }
 
     if (this->aiming && launch) {
-        this->event(Event::LAUNCH);
+        this->event(Event::LAUNCH, this);
         this->aiming = false;
     }
 }

@@ -28,7 +28,7 @@ int ScoreBoard::getLives() {
 
 void ScoreBoard::update() {
     if (lives <= 0) {
-        this->event(Event::GAME_OVER);
+        this->event(Event::GAME_OVER, this);
     }
 
     this->scoreStream.str("");

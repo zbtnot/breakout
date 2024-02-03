@@ -1,6 +1,7 @@
 #ifndef __GAME_H
 #define __GAME_H
 
+#include "entity/Entity.h"
 #include "entity/Ball.h"
 #include "entity/Paddle.h"
 #include "entity/Block.h"
@@ -40,7 +41,7 @@ public:
     void frame();
     void update();
     void draw();
-    void handleEvents(Event e);
+    void handleEvents(Event e, Entity *entity);
 };
 
 #endif

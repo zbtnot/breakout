@@ -1,6 +1,7 @@
 #ifndef __EVENT_H
 #define __EVENT_H
 #include <functional>
+#include "entity/Entity.h"
 
 enum struct Event {
     BONK,
@@ -10,6 +11,6 @@ enum struct Event {
     BLOCK_HIT,
 };
 
-typedef std::function<void(Event)> EventHandler;
+typedef std::function<void(Event, Entity *)> EventHandler;
 
 #endif

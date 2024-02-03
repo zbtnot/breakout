@@ -19,7 +19,7 @@ void Block::update() {
     }
 
     if (CheckCollisionRecs(this->dimensions, this->ball->GetDimensions())) {
-        this->event(Event::BLOCK_HIT);
+        this->event(Event::BLOCK_HIT, this);
         this->active = false;
     }
 }
