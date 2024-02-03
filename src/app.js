@@ -56,14 +56,5 @@ async function kitten() {
     gameModule['_loadCat']();
 }
 
-function downloadBlob(blob) {
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = "cat.png"; // the name of the file download
-    anchor.click();
-    URL.revokeObjectURL(url); // frees the memory used
-}
-
 playBtn.addEventListener("click", play);
 kittenBtn.addEventListener('click', kitten);
