@@ -44,16 +44,20 @@ BIN_DIR := ./bin
 ASSETS_DIR := ./assets
 
 SRCS := $(shell find $(SRC_DIRS) -name '*.cpp')
-WEB_SRCS := $(shell find $(SRC_DIRS) -name '*.html')
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
+HTML_SRCS := $(shell find $(SRC_DIRS) -name '*.html')
+JS_SRCS := $(shell find $(SRC_DIRS) -name '*.js')
 
 ifeq ($(TARGET),wasm)
-bin/$(TARGET_EXEC): $(OBJS) web
-	mkdir -p $(dir $@)
-	$(CXX) $(OBJS) -o bin/$(TARGET_EXEC) $(LDFLAGS)
+web: parcel
+	cp $(shell find ./build/wasm -name '*.*.js' -o -name '*.html' -o -name '*.wasm') bin
 
-web: $(WEB_SRCS)
-	cp $(WEB_SRCS) bin
+parcel: $(HTML_SRCS) $(JS_SRCS) $(BUILD_DIR)/$(TARGET_EXEC)
+	mkdir -p $(BUILD_DIR)
+	npx parcel build --no-cache --dist-dir $(BUILD_DIR) ./src/index.html
+
+$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
+	$(CXX) $(OBJS) -o $(BUILD_DIR)/$(TARGET_EXEC) $(LDFLAGS)
 else
 bin/$(TARGET_EXEC): $(OBJS)
 	mkdir -p $(dir $@)

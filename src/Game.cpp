@@ -10,10 +10,10 @@ Game::Game(const char *title) {
     srand(time(nullptr));
 
     // load assets
-    this->bonk = LoadSound("./assets/bonk.wav");
-    this->womp = LoadSound("./assets/womp.wav");
-    this->bgm = LoadMusicStream("./assets/bgm2.wav");
-    this->gameOverBgm = LoadMusicStream("./assets/gameover.mp3");
+    this->bonk = LoadSound("./assets/bonk.ogg");
+    this->womp = LoadSound("./assets/womp.ogg");
+    this->bgm = LoadMusicStream("./assets/bgm.ogg");
+    this->gameOverBgm = LoadMusicStream("./assets/gameover.ogg");
     this->bg = LoadTexture("./assets/bg.png");
     this->paddleTexture = LoadTexture("./assets/paddle.png");
     this->ballTexture = LoadTexture("./assets/ball.png");
