@@ -33,7 +33,7 @@ void Paddle::update() {
     
     if (
         IsKeyDown(KEY_RIGHT) 
-        || (IsGamepadAvailable(0) && (IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_LEFT) || (int)(GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X)) == 1))
+        || (IsGamepadAvailable(0) && (IsGamepadButtonDown(0, GAMEPAD_BUTTON_LEFT_FACE_RIGHT) || (int)(GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X)) == 1))
     ) {
         moveRight = true;
     }

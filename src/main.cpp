@@ -23,9 +23,14 @@ void deinit() {
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 extern "C" {
-EMSCRIPTEN_KEEPALIVE void pause() { emscripten_pause_main_loop(); }
-EMSCRIPTEN_KEEPALIVE void unpause() { emscripten_resume_main_loop(); }
-EMSCRIPTEN_KEEPALIVE void shutdown() { emscripten_cancel_main_loop(); deinit(); }
+EMSCRIPTEN_KEEPALIVE void loadCat() {
+    if (g == nullptr) {
+        return;
+    }
+    emscripten_pause_main_loop();
+    g->loadCat();
+    emscripten_resume_main_loop();
+}
 }
 #endif
 
@@ -34,9 +39,9 @@ int main(int argc, char **argv) {
     const int TARGET_FPS = 60;
 
 #ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop(loop, TARGET_FPS, 1);
     title = emscripten_get_window_title();
     init(title);
+    emscripten_set_main_loop(loop, TARGET_FPS, 1);
 #else
     init(title);
     SetTargetFPS(TARGET_FPS);

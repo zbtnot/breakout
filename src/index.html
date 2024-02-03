@@ -3,11 +3,29 @@
 <head>
     <meta charset="utf-8"/>
     <title>Breakout - Emscripten FS</title>
+    <style>
+        body {
+            background-color: #333;
+        }
+
+        .container {
+            margin-bottom: 10px;
+            min-width: 80%;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            gap: 10px;
+        }
+    </style>
 </head>
 <body>
-<button id="play">Play the game</button>
-
-<canvas id="canvas"></canvas>
+    <div class="container">
+        <button id="play">Play the game</button>
+        <button id="kitten" disabled>Download a kitten into the game!</button>
+    </div>
+    <div class="container">
+        <canvas id="canvas"></canvas>
+    </div>
 <script type="module" src="app.js"></script>
 </body>
 </html>

@@ -178,3 +178,8 @@ void Game::handleEvents(Event e, Entity *entity) {
             break;
     }
 }
+
+void Game::loadCat() {
+    UnloadTexture(this->bg);
+    this->bg = LoadTexture("/tmp/cat.png");
+}

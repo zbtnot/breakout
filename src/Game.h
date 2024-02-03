@@ -42,6 +42,7 @@ public:
     void update();
     void draw();
     void handleEvents(Event e, Entity *entity);
+    void loadCat();
 };
 
 #endif
