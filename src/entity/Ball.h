@@ -1,11 +1,11 @@
 #ifndef __BALL_H
 #define __BALL_H
 
-#include <functional>
-#include "Entity.h"
-#include "Paddle.h"
 #include "raylib.h"
 #include "raymath.h"
+#include "Entity.h"
+#include "Paddle.h"
+#include "../Event.h"
 
 class Ball : public Entity {
 private:
@@ -14,13 +14,17 @@ private:
     Paddle *paddle;
     bool launched = false;
     Vector2 velocity;
-    std::function<void(void)> bonkHandler;
+    EventHandler event;
+    int frameCounter = 0;
+
 public:
-    Ball(Texture2D *texture, const Rectangle *viewport, Paddle *paddle, std::function<void(void)> bonkHandler);
+    Ball(Texture2D *texture, const Rectangle *viewport, Paddle *paddle, EventHandler event);
     ~Ball();
     void update();
     void draw();
     void launch();
+    void reset();
+    void invertVelocity();
 };
 
 #endif

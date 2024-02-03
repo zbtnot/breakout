@@ -1,13 +1,12 @@
 #include "Ball.h"
-#include <iostream>
 
-Ball::Ball(Texture2D *texture, const Rectangle *viewport, Paddle *paddle, std::function<void(void)> bonkHandler) {
+Ball::Ball(Texture2D *texture, const Rectangle *viewport, Paddle *paddle, EventHandler event) {
     this->dimensions = {.width = (float) texture->width, .height = (float) texture->height};
     this->texture = texture;
     this->viewport = viewport;
     this->active = true;
     this->paddle = paddle;
-    this->bonkHandler = bonkHandler;
+    this->event = event;
 }
 
 Ball::~Ball() {}
@@ -16,6 +15,8 @@ void Ball::update() {
     if (!this->active) {
         return;
     }
+    
+    // track the paddle until launch
     if (!this->launched) {
         auto centerOfPaddle = this->paddle->GetDimensions().x + this->paddle->GetDimensions().width / 2;
         auto x = centerOfPaddle - this->texture->width / 2;
@@ -26,22 +27,22 @@ void Ball::update() {
         this->dimensions.x += this->velocity.x;
         this->dimensions.y += this->velocity.y;
 
-        if (this->dimensions.y <= 0) {
-            this->dimensions.y = 0;
-            this->velocity.y *= -1;
-            this->bonkHandler();
+        // we need to account for the score banner
+        if (this->dimensions.y <= 40) {
+            this->dimensions.y = 40;
+            this->event(Event::BONK);
         }
-    
-        // todo this should emit a ball lost event
+
         if (this->dimensions.y >= this->viewport->height - this->dimensions.height) {
-            this->dimensions.y = this->viewport->height - this->dimensions.height;
-            this->velocity.y *= -1;
+            this->event(Event::BALL_LOST);
+            return;
         }
 
         if (CheckCollisionRecs(this->dimensions, this->paddle->GetDimensions())) {
-            this->velocity.y *= -1;
-            this->bonkHandler();
+            this->event(Event::BONK);
         }
+
+        frameCounter = 0;
     }
 }
 
@@ -54,8 +55,21 @@ void Ball::draw() {
 
 void Ball::launch() {
     this->launched = true;
-    this->velocity = Vector2 {
-        .x = 0,
-        .y = -5,
+    this->velocity = Vector2{
+            .x = 0,
+            .y = -5,
     };
+}
+
+void Ball::reset() {
+    this->launched = false;
+    this->velocity = Vector2Zero();
+}
+
+void Ball::invertVelocity() {
+    // only invert once per frame
+    if (frameCounter++ == 0) {
+        this->velocity.x *= -1;
+        this->velocity.y *= -1;
+    }
 }
