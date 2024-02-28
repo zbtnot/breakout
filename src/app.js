@@ -1,9 +1,15 @@
 import Module from '../build/wasm/index';
 
+// setup query selectors
 const playBtn = document.querySelector("#play");
 const kittenBtn = document.querySelector('#kitten');
+const uploadBtn = document.querySelector('#file-picker');
+const uploadBtnInput = document.querySelector('#file-picker-input');
+
+// initial state of the web assembly module
 let gameModule = null;
 
+// helper function that converts a file blob into an HtmlImageElement
 async function blobToImage(blob) {
     const url = URL.createObjectURL(blob);
     const img = new Image();
@@ -16,6 +22,38 @@ async function blobToImage(blob) {
     return imgBlob;
 }
 
+// helper function that renders a file blob into an HtmlCanvasElement,
+// then returns it as an Int8Array suitable for writing to disk.
+async function canvasify(image) {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    // set up our temporary canvas for drawing into it
+    canvas.height = 480;
+    canvas.width = 640;
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const canvasBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1));
+
+    return new Int8Array(await canvasBlob.arrayBuffer());
+}
+
+// helper method for writing a canvasified-image to disk
+function writeImageToDisk(canvasifiedImage)
+{
+    if (!gameModule) {
+        return;
+    }
+
+    gameModule.FS.writeFile(
+        '/tmp/cat.png',
+        canvasifiedImage,
+    );
+
+    // inform native code it is time to load the cat!
+    gameModule['_loadCat']();
+}
+
+// event handler for booting the game
 async function play() {
     if (!gameModule) {
         gameModule = await Module({
@@ -23,9 +61,11 @@ async function play() {
         });
         playBtn.setAttribute('disabled', '');
         kittenBtn.removeAttribute('disabled');
+        uploadBtn.removeAttribute('disabled');
     }
 }
 
+// event handler for downloading cats from the internet
 async function kitten() {
     if (!gameModule) {
         return;
@@ -33,28 +73,27 @@ async function kitten() {
 
     // download the cat as a binary blob
     const catto = await (await fetch('https://placekitten.com/g/640/480')).blob();
+    // convert the blob to an HtmlImageElement
 
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    
-    // convert the blob to an img-src
-    const cattoImg = await blobToImage(catto);
-
-    // set up our temporary canvas for drawing into it
-    canvas.height = cattoImg.naturalHeight;
-    canvas.width = cattoImg.naturalWidth;
-    context.drawImage(cattoImg, 0, 0, cattoImg.naturalWidth, cattoImg.naturalHeight);
-    const canvasBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1));
-    const bufferView = new Int8Array(await canvasBlob.arrayBuffer());
-    
-    gameModule.FS.writeFile(
-        '/tmp/cat.png',
-        bufferView
-    );
-    
-    // inform native code it is time to load the cat!
-    gameModule['_loadCat']();
+    const image = await blobToImage(catto);
+    const canvasifiedImage = await canvasify(image);
+    writeImageToDisk(canvasifiedImage);
 }
 
-playBtn.addEventListener("click", play);
+// event handler for uploading images from the user's device
+async function upload() {
+    if (uploadBtnInput.files.length === 0 || !gameModule) {
+        return;
+    }
+    // extract the file and convert it to an img-src
+    const file = uploadBtnInput.files[0];
+    const imageBlob = await blobToImage(file);
+    const canvasIfiedImage = await canvasify(imageBlob);
+    writeImageToDisk(canvasIfiedImage);
+}
+
+// bind the event handlers
+playBtn.addEventListener('click', play);
 kittenBtn.addEventListener('click', kitten);
+uploadBtn.addEventListener('click', () => uploadBtnInput.click());
+uploadBtnInput.addEventListener('change', upload);

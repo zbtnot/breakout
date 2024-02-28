@@ -16,12 +16,18 @@
             justify-content: center;
             gap: 10px;
         }
+
+        input[type=file] {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <button id="play">Play the game</button>
         <button id="kitten" disabled>Download a kitten into the game!</button>
+        <button id="file-picker" disabled>Load your own background</button>
+        <input type="file" id="file-picker-input" accept="image/png">
     </div>
     <div class="container">
         <canvas id="canvas"></canvas>
